@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            900: '#111827',
+                            800: '#1F2937',
+                            700: '#374151',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #111827; color: white; font-family: 'Inter', sans-serif; }
+        .chart-container { height: 400px; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Header & Controls -->
+        <div class="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+            <div>
+                <h1 class="text-2xl font-bold">Algorithmic Scalping Bot</h1>
+                <p class="text-gray-400 text-sm" id="status-text">Status: Checking...</p>
+            </div>
+            <div class="flex space-x-4">
+                <button id="btn-start" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition">Start Bot</button>
+                <button id="btn-stop" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded font-semibold transition">Stop Bot</button>
+                <button id="btn-kill" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded font-bold shadow-[0_0_15px_rgba(220,38,38,0.5)] transition">KILL SWITCH</button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h3 class="text-gray-400 text-sm font-semibold mb-1">Total Equity (USDT)</h3>
+                <p class="text-3xl font-bold" id="val-equity">0.00</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h3 class="text-gray-400 text-sm font-semibold mb-1">Available Balance</h3>
+                <p class="text-3xl font-bold text-blue-400" id="val-available">0.00</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-2">
+                    <span class="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300">Goal: $50</span>
+                </div>
+                <h3 class="text-gray-400 text-sm font-semibold mb-1">Daily PnL Tracker</h3>
+                <p class="text-3xl font-bold text-green-400" id="val-dailypnl">$0.00</p>
+                <div class="w-full bg-gray-700 rounded-full h-2.5 mt-4">
+                    <div class="bg-green-500 h-2.5 rounded-full" id="pnl-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h2 class="text-lg font-semibold mb-4">Live BTC/USDT Chart</h2>
+            <div id="tvchart" class="chart-container w-full bg-gray-900 rounded"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Open Positions -->
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h2 class="text-lg font-semibold mb-4">Open Positions</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                            <tr>
+                                <th class="px-4 py-2">Symbol</th>
+                                <th class="px-4 py-2">Side</th>
+                                <th class="px-4 py-2">Qty</th>
+                                <th class="px-4 py-2">Entry Price</th>
+                                <th class="px-4 py-2">Unrealized PnL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positions-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Historical Trades -->
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg h-[300px] flex flex-col">
+                <h2 class="text-lg font-semibold mb-4">Trade History (Last 50)</h2>
+                <div class="overflow-y-auto flex-1 text-sm space-y-2 pr-2">
+                    <table class="w-full text-left">
+                        <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                            <tr>
+                                <th class="px-2 py-1">Time</th>
+                                <th class="px-2 py-1">Symbol</th>
+                                <th class="px-2 py-1">Side</th>
+                                <th class="px-2 py-1">PnL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs / Event History -->
+        <div class="bg-gray-800 p-4 rounded-lg shadow-lg h-[200px] flex flex-col">
+            <h2 class="text-lg font-semibold mb-4">System Events</h2>
+            <div class="overflow-y-auto flex-1 font-mono text-xs space-y-2 pr-2" id="logs-container">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

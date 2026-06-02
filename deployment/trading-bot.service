@@ -1,0 +1,23 @@
+[Unit]
+Description=Algorithmic Trading Bot FastAPI Service
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/trading_bot
+Environment="PATH=/opt/trading_bot/venv/bin"
+EnvironmentFile=/opt/trading_bot/.env
+ExecStart=/opt/trading_bot/venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port 8000
+
+# Automatically restart the service if it crashes
+Restart=always
+RestartSec=5
+
+# Standard Output and Error Logs
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=trading-bot
+
+[Install]
+WantedBy=multi-user.target
