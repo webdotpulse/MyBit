@@ -27,7 +27,7 @@ This guide provides instructions to deploy the High-Frequency Scalping Bot onto 
 1. SSH into your newly created VM instance from the GCP Console.
 2. Clone your repository (or copy the files):
    ```bash
-   git clone <your-repo-url> /opt/trading_bot
+   git clone https://github.com/webdotpulse/MyBit /opt/trading_bot
    cd /opt/trading_bot
    ```
 3. Run the setup script to install dependencies and configure the environment:

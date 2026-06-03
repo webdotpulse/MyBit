@@ -21,11 +21,10 @@ PROJECT_DIR="/opt/trading_bot"
 echo "[3/6] Setting up project directory at $PROJECT_DIR..."
 
 if [ ! -d "$PROJECT_DIR" ]; then
-    sudo mkdir -p $PROJECT_DIR
-    sudo chown $USER:$USER $PROJECT_DIR
+    sudo git clone https://github.com/webdotpulse/MyBit $PROJECT_DIR
+    sudo chown -R $USER:$USER $PROJECT_DIR
 fi
 
-# In a real scenario, we would git clone here. Assuming files are copied over.
 echo "[4/6] Creating Python virtual environment..."
 cd $PROJECT_DIR
 python3 -m venv venv
