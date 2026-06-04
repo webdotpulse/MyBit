@@ -35,10 +35,11 @@
                 <h1 class="text-2xl font-bold">Algorithmic Scalping Bot</h1>
                 <p class="text-gray-400 text-sm" id="status-text">Status: Checking...</p>
             </div>
-            <div class="flex space-x-4">
+            <div class="flex space-x-4 items-center">
                 <button id="btn-start" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition">Start Bot</button>
                 <button id="btn-stop" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded font-semibold transition">Stop Bot</button>
                 <button id="btn-kill" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded font-bold shadow-[0_0_15px_rgba(220,38,38,0.5)] transition">KILL SWITCH</button>
+                <button id="btn-config" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition ml-4">Settings</button>
             </div>
         </div>
 
@@ -121,6 +122,67 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Configuration Modal -->
+    <div id="config-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg border border-gray-700">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Bot Settings</h2>
+            <form id="config-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Bybit API Key</label>
+                        <input type="text" id="conf-api-key" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Bybit API Secret</label>
+                        <input type="password" id="conf-api-secret" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Trading Pair</label>
+                        <input type="text" id="conf-pair" placeholder="e.g. BTCUSDT or AUTO" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Use Testnet</label>
+                        <select id="conf-testnet" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                            <option value="True">Yes (Testnet)</option>
+                            <option value="False">No (Mainnet)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Max Daily Drawdown ($)</label>
+                        <input type="number" id="conf-drawdown" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Daily Profit Goal ($)</label>
+                        <input type="number" id="conf-profit" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-400 mt-6 border-b border-gray-700 pb-1">Web Dashboard Login</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Username</label>
+                        <input type="text" id="conf-web-user" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Password</label>
+                        <input type="text" id="conf-web-pass" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="btn-close-config" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded font-semibold transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition">Save Settings</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Scripts -->

@@ -2,12 +2,12 @@ import time
 import os
 import secrets
 import asyncio
-from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 
 from backend.database import engine, Base, get_db
 from backend.models import SystemEvent, TradeHistory, DailyStats
@@ -38,10 +38,45 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
+
+# --- Configuration Endpoints ---
+
+@app.get("/api/config")
+def get_config(_=Depends(verify_credentials)):
+    return {
+        "BYBIT_API_KEY": os.getenv("BYBIT_API_KEY", ""),
+        "BYBIT_API_SECRET": os.getenv("BYBIT_API_SECRET", ""),
+        "BYBIT_TESTNET": os.getenv("BYBIT_TESTNET", "True"),
+        "TRADING_PAIR": os.getenv("TRADING_PAIR", "AUTO"),
+        "MAX_DAILY_DRAWDOWN": os.getenv("MAX_DAILY_DRAWDOWN", "50"),
+        "DAILY_PROFIT_GOAL": os.getenv("DAILY_PROFIT_GOAL", "50"),
+        "WEB_USERNAME": os.getenv("WEB_USERNAME", "admin"),
+        "WEB_PASSWORD": os.getenv("WEB_PASSWORD", "securepassword")
+    }
+
+@app.post("/api/config")
+async def update_config(request: Request, _=Depends(verify_credentials)):
+    data = await request.json()
+    env_file = ".env"
+
+    # Update .env file using set_key
+    for key, value in data.items():
+        set_key(env_file, key, str(value))
+        # Update current process environment
+        os.environ[key] = str(value)
+
+    # Reload bot configuration
+    bot.reload_config()
+
+    return {"status": "Configuration updated successfully"}
+
+@app.get("/api/ws-token")
+def get_ws_token(_=Depends(verify_credentials)):
+    return {"token": os.getenv("WEB_PASSWORD", "securepassword")}
 
 # --- Frontend Serving ---
 

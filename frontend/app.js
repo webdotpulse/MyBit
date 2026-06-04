@@ -1,14 +1,6 @@
 // Configuration
 const API_BASE = '/api';
-
-// For simplicity in this demo, we'll prompt the user for the password to use for the WebSocket token.
-// In a real app, you would fetch a short-lived token via a secure REST endpoint.
-let wsToken = localStorage.getItem('ws_token');
-if (!wsToken) {
-    wsToken = prompt("Enter the dashboard password to enable real-time chart updates:");
-    localStorage.setItem('ws_token', wsToken);
-}
-const WS_URL = 'ws://' + window.location.host + '/ws?token=' + wsToken;
+let WS_URL = '';
 
 // UI Elements
 const els = {
@@ -23,6 +15,20 @@ const els = {
     positionsTbody: document.getElementById('positions-tbody'),
     historyTbody: document.getElementById('history-tbody'),
     logsContainer: document.getElementById('logs-container'),
+
+    // Config Elements
+    btnConfig: document.getElementById('btn-config'),
+    configModal: document.getElementById('config-modal'),
+    btnCloseConfig: document.getElementById('btn-close-config'),
+    configForm: document.getElementById('config-form'),
+    confApiKey: document.getElementById('conf-api-key'),
+    confApiSecret: document.getElementById('conf-api-secret'),
+    confPair: document.getElementById('conf-pair'),
+    confTestnet: document.getElementById('conf-testnet'),
+    confDrawdown: document.getElementById('conf-drawdown'),
+    confProfit: document.getElementById('conf-profit'),
+    confWebUser: document.getElementById('conf-web-user'),
+    confWebPass: document.getElementById('conf-web-pass'),
 };
 
 // Initialize Chart
@@ -72,16 +78,30 @@ const candleSeries = chart.addCandlestickSeries({
 let markers = [];
 
 // API Calls
-async function fetchAPI(endpoint, method = 'GET') {
+async function fetchAPI(endpoint, method = 'GET', body = null) {
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
+        const options = {
             method: method,
-            credentials: 'include'
-        });
+            credentials: 'include',
+            headers: {}
+        };
+        if (body) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+        const response = await fetch(`${API_BASE}${endpoint}`, options);
         return await response.json();
     } catch (error) {
         console.error(`Error fetching ${endpoint}:`, error);
         return null;
+    }
+}
+
+async function initWebSocketToken() {
+    const data = await fetchAPI('/ws-token');
+    if (data && data.token) {
+        WS_URL = 'ws://' + window.location.host + '/ws?token=' + data.token;
+        setupWebSocket();
     }
 }
 
@@ -198,8 +218,53 @@ els.btnKill.addEventListener('click', async () => {
     }
 });
 
-// WebSocket for Live Data (Mock Implementation as Backend just accepts currently)
+// Config Modal Logic
+els.btnConfig.addEventListener('click', async () => {
+    const config = await fetchAPI('/config');
+    if (config) {
+        els.confApiKey.value = config.BYBIT_API_KEY || '';
+        els.confApiSecret.value = config.BYBIT_API_SECRET || '';
+        els.confPair.value = config.TRADING_PAIR || 'AUTO';
+        els.confTestnet.value = config.BYBIT_TESTNET || 'True';
+        els.confDrawdown.value = config.MAX_DAILY_DRAWDOWN || '50';
+        els.confProfit.value = config.DAILY_PROFIT_GOAL || '50';
+        els.confWebUser.value = config.WEB_USERNAME || 'admin';
+        els.confWebPass.value = config.WEB_PASSWORD || 'securepassword';
+        els.configModal.classList.remove('hidden');
+    }
+});
+
+els.btnCloseConfig.addEventListener('click', () => {
+    els.configModal.classList.add('hidden');
+});
+
+els.configForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newConfig = {
+        BYBIT_API_KEY: els.confApiKey.value,
+        BYBIT_API_SECRET: els.confApiSecret.value,
+        TRADING_PAIR: els.confPair.value,
+        BYBIT_TESTNET: els.confTestnet.value,
+        MAX_DAILY_DRAWDOWN: els.confDrawdown.value,
+        DAILY_PROFIT_GOAL: els.confProfit.value,
+        WEB_USERNAME: els.confWebUser.value,
+        WEB_PASSWORD: els.confWebPass.value
+    };
+
+    await fetchAPI('/config', 'POST', newConfig);
+    els.configModal.classList.add('hidden');
+
+    // Refresh WS token just in case password changed
+    const data = await fetchAPI('/ws-token');
+    if (data && data.token) {
+        WS_URL = 'ws://' + window.location.host + '/ws?token=' + data.token;
+        // Don't restart WS here as it will reconnect automatically or on next poll
+    }
+});
+
+// WebSocket for Live Data
 function setupWebSocket() {
+    if (!WS_URL) return;
     const ws = new WebSocket(WS_URL);
 
     ws.onmessage = (event) => {
@@ -240,7 +305,7 @@ function setupWebSocket() {
 // Init loop
 setInterval(updateDashboard, 5000); // Poll REST APIs every 5 seconds
 updateDashboard();
-setupWebSocket();
+initWebSocketToken(); // Fetch token and then setup WS
 
 // Handle window resize for chart
 window.addEventListener('resize', () => {

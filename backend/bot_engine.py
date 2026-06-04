@@ -17,7 +17,9 @@ class BotEngine:
         self.max_daily_drawdown = float(os.getenv("MAX_DAILY_DRAWDOWN", 50))
         self.daily_profit_goal = float(os.getenv("DAILY_PROFIT_GOAL", 50))
 
-        self.connection = BybitConnection(testnet=True) # set to False for production
+        testnet_env = os.getenv("BYBIT_TESTNET", "True").lower() == "true"
+
+        self.connection = BybitConnection(testnet=testnet_env)
         self.strategy = ScalpingStrategy()
 
         # Initialize dataframe for indicators
@@ -34,6 +36,24 @@ class BotEngine:
         self.on_signal = None
         self.ob_imbalance = 0
         self.on_kline = None
+
+    def reload_config(self):
+        """Reload configuration variables from environment without full restart"""
+        was_running = self.is_running
+        if was_running:
+            self.stop()
+
+        self.symbol = os.getenv("TRADING_PAIR", "BTCUSDT")
+        self.max_daily_drawdown = float(os.getenv("MAX_DAILY_DRAWDOWN", 50))
+        self.daily_profit_goal = float(os.getenv("DAILY_PROFIT_GOAL", 50))
+
+        testnet_env = os.getenv("BYBIT_TESTNET", "True").lower() == "true"
+
+        # Re-initialize connection with new keys
+        self.connection = BybitConnection(testnet=testnet_env)
+
+        if was_running:
+            self.start()
 
     def _log_event(self, event_type, message):
         logger.info(f"[{event_type}] {message}")
@@ -237,6 +257,56 @@ class BotEngine:
         self._log_event("KILL_SWITCH", "Kill switch activated. Closing all positions and stopping bot.")
         self.connection.close_all_positions(self.symbol)
 
+    def select_best_trading_pair(self):
+        """Scans the market and selects the best trading pair for scalping based on volume and volatility."""
+        self._log_event("INFO", "Scanning market for the best trading pair...")
+        tickers = self.connection.get_tickers()
+
+        if not tickers:
+            self._log_event("WARNING", "Failed to fetch tickers. Falling back to BTCUSDT.")
+            return "BTCUSDT"
+
+        best_pair = None
+        best_score = -1
+
+        for ticker in tickers:
+            symbol = ticker.get('symbol', '')
+            if not symbol.endswith('USDT'):
+                continue
+
+            try:
+                # We need decent volume to ensure liquidity and tight spreads
+                volume = float(ticker.get('turnover24h', 0))
+                if volume < 50000000: # Min $50M daily volume
+                    continue
+
+                high = float(ticker.get('highPrice24h', 1))
+                low = float(ticker.get('lowPrice24h', 1))
+
+                # Avoid division by zero
+                if low <= 0:
+                    continue
+
+                # Volatility = (High - Low) / Low
+                volatility = (high - low) / low
+
+                # Basic score: Volatility * log(Volume)
+                # This favors highly volatile pairs but requires decent volume
+                import math
+                score = volatility * math.log(volume)
+
+                if score > best_score:
+                    best_score = score
+                    best_pair = symbol
+            except Exception:
+                continue
+
+        if best_pair:
+            self._log_event("INFO", f"Selected {best_pair} for trading (Score: {best_score:.4f})")
+            return best_pair
+
+        return "BTCUSDT"
+
     def start(self):
         """Starts the bot and connects websockets."""
         if self.halt_until_next_day:
@@ -255,6 +325,13 @@ class BotEngine:
 
         self.is_running = True
         self._log_event("INFO", "Bot Engine Started")
+
+        # If set to AUTO, find the best pair before subscribing
+        if self.symbol == "AUTO":
+            self.symbol = self.select_best_trading_pair()
+            # Reset indicators/data for the new pair
+            self.kline_data = pd.DataFrame(columns=['open', 'high', 'low', 'close', 'volume', 'turnover'])
+            self.indicators = Indicators(self.kline_data)
 
         # Subscribe to public kline data (1 minute intervals for scalping)
         self.connection.subscribe_kline(self.symbol, "1", self.handle_kline_message)
