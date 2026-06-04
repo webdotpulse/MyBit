@@ -2,7 +2,7 @@ fastapi==0.111.0
 uvicorn==0.29.0
 pybit==5.8.0
 pandas>=2.2.2
-pandas-ta>=0.3.14b0
+pandas-ta
 sqlalchemy==2.0.30
 python-dotenv==1.0.1
 websockets==12.0
