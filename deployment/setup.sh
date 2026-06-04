@@ -44,6 +44,7 @@ fi
 echo "[6/6] Configuring Firewall..."
 sudo sed -i 's/IPV6=yes/IPV6=no/' /etc/default/ufw || true
 sudo ufw allow ssh || true
+sudo ufw allow 80/tcp || true
 sudo ufw allow 8000/tcp || true # Web Dashboard Port
 sudo ufw --force enable || true
 

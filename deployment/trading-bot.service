@@ -8,7 +8,7 @@ Group=root
 WorkingDirectory=/opt/trading_bot
 Environment="PATH=/opt/trading_bot/venv/bin"
 EnvironmentFile=/opt/trading_bot/.env
-ExecStart=/opt/trading_bot/venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port 8000
+ExecStart=/opt/trading_bot/venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port 80
 
 # Automatically restart the service if it crashes
 Restart=always
