@@ -65,6 +65,16 @@ class BybitConnection:
             logger.error(f"Error fetching wallet balance: {e}")
             return None
 
+    def get_tickers(self, category="linear"):
+        try:
+            response = self.session.get_tickers(category=category)
+            if response.get("retCode") == 0:
+                return response.get("result", {}).get("list", [])
+            return []
+        except Exception as e:
+            logger.error(f"Error fetching tickers: {e}")
+            return []
+
     def get_open_positions(self, symbol):
         try:
             response = self.session.get_positions(

@@ -1,0 +1,23 @@
+Failed to connect ws_private: API_KEY or API_SECRET is not set. They both are needed in order to access private topics
+Failed to connect ws_public: WebSocket Unified V5 (wss://stream-testnet.bybit.com/v5/public/linear) connection failed. Too many connection attempts. pybit will no longer try to reconnect.
+INFO:     Started server process [194821]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:33580 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33580 - "GET /app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33580 - "GET /api/klines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57508 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57508 - "GET /app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57508 - "GET /api/klines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56940 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56940 - "GET /app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56940 - "GET /api/klines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35342 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35342 - "GET /app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35342 - "GET /api/klines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37354 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37354 - "GET /app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37354 - "GET /api/klines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37354 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37354 - "GET /api/klines HTTP/1.1" 200 OK
