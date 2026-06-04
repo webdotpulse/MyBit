@@ -75,3 +75,25 @@ Open your web browser and navigate to:
 `http://<YOUR_VM_EXTERNAL_IP>:8000`
 
 Login using the `WEB_USERNAME` and `WEB_PASSWORD` defined in your `.env` file.
+
+## Resetting the Cloud VM
+If you need to start fresh or resolve issues without completely deleting and recreating your VM instance, you can simply reset it.
+
+**Option 1: Using the GCP Console**
+1. Go to the **Google Cloud Console**.
+2. Navigate to **Compute Engine > VM instances**.
+3. Check the box next to your instance (`trading-bot-vm`).
+4. Click the **RESET** button at the top of the page. This performs a hard reset (similar to pressing the reset button on a physical computer).
+
+**Option 2: Using the gcloud CLI**
+```bash
+gcloud compute instances reset trading-bot-vm --zone=<YOUR_VM_ZONE>
+```
+
+**Option 3: Restarting from inside the VM**
+If you still have SSH access and just want to restart the OS gracefully:
+```bash
+sudo /sbin/reboot
+```
+
+After the VM comes back online, the `trading-bot` service will start automatically if you enabled it in Step 5.
