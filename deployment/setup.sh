@@ -42,9 +42,10 @@ fi
 
 # 5. Configure Firewall (UFW)
 echo "[6/6] Configuring Firewall..."
-sudo ufw allow ssh
-sudo ufw allow 8000/tcp # Web Dashboard Port
-sudo ufw --force enable
+sudo sed -i 's/IPV6=yes/IPV6=no/' /etc/default/ufw || true
+sudo ufw allow ssh || true
+sudo ufw allow 8000/tcp || true # Web Dashboard Port
+sudo ufw --force enable || true
 
 echo "=========================================="
 echo " Setup Complete! "
