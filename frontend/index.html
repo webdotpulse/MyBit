@@ -4,23 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trading Bot Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gray: {
-                            900: '#111827',
-                            800: '#1F2937',
-                            700: '#374151',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="output.css" rel="stylesheet">
     <style>
         body { background-color: #111827; color: white; font-family: 'Inter', sans-serif; }
         .chart-container { height: 400px; }
@@ -186,7 +170,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

@@ -235,3 +235,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
             data = await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+@app.get("/output.css")
+def serve_output_css(_=Depends(verify_credentials)):
+    return FileResponse(os.path.join(BASE_DIR, "frontend", "output.css"))
