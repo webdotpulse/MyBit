@@ -44,15 +44,30 @@ class BybitConnection:
 
     def get_wallet_balance(self, coin="USDT"):
         try:
+            # When querying for total UTA balance, it is better not to restrict by coin
+            # unless we only care about a specific coin's physical balance.
+            # In a Unified Trading Account, `totalEquity` and `totalAvailableBalance`
+            # provide the global USD value used for linear perps margin.
             response = self.session.get_wallet_balance(
-                accountType="UNIFIED",
-                coin=coin
+                accountType="UNIFIED"
             )
             # Safely navigate the nested response structure
             if response.get("retCode") == 0:
                 list_data = response.get("result", {}).get("list", [])
                 if list_data:
-                    coins = list_data[0].get("coin", [])
+                    account_data = list_data[0]
+                    # Unified account level balances
+                    total_equity = account_data.get("totalEquity")
+                    total_available = account_data.get("totalAvailableBalance")
+
+                    if total_equity is not None and total_available is not None:
+                        return {
+                            "equity": float(total_equity or 0),
+                            "availableBalance": float(total_available or 0)
+                        }
+
+                    # Fallback to specific coin if total balances are absent
+                    coins = account_data.get("coin", [])
                     for c in coins:
                         if c.get("coin") == coin:
                             return {
