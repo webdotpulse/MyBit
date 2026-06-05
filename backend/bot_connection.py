@@ -62,7 +62,7 @@ class BybitConnection:
                     total_equity = account_data.get("totalEquity")
                     total_available = account_data.get("totalAvailableBalance")
 
-                    if total_equity is not None and total_available is not None:
+                    if total_equity and total_available:
                         equity += float(total_equity or 0)
                         available_balance = float(total_available or 0)
                     else:
