@@ -1,6 +1,6 @@
 fastapi==0.111.0
 uvicorn==0.29.0
-pybit==5.8.0
+pybit>=5.16.0
 pandas>=2.2.2
 pandas-ta-classic
 sqlalchemy==2.0.30
