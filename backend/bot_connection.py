@@ -44,38 +44,61 @@ class BybitConnection:
 
     def get_wallet_balance(self, coin="USDT"):
         try:
-            # When querying for total UTA balance, it is better not to restrict by coin
-            # unless we only care about a specific coin's physical balance.
-            # In a Unified Trading Account, `totalEquity` and `totalAvailableBalance`
-            # provide the global USD value used for linear perps margin.
-            response = self.session.get_wallet_balance(
-                accountType="UNIFIED"
-            )
-            # Safely navigate the nested response structure
+            # Fetch Unified Trading Account balance
+            response = self.session.get_wallet_balance(accountType="UNIFIED")
+
+            # Fetch Funding Account balance
+            fund_response = self.session.get_wallet_balance(accountType="FUND")
+
+            equity = 0.0
+            available_balance = 0.0
+            fund_balance = 0.0
+
+            # Parse Unified Balance
             if response.get("retCode") == 0:
                 list_data = response.get("result", {}).get("list", [])
                 if list_data:
                     account_data = list_data[0]
-                    # Unified account level balances
                     total_equity = account_data.get("totalEquity")
                     total_available = account_data.get("totalAvailableBalance")
 
                     if total_equity is not None and total_available is not None:
-                        return {
-                            "equity": float(total_equity or 0),
-                            "availableBalance": float(total_available or 0)
-                        }
+                        equity += float(total_equity or 0)
+                        available_balance = float(total_available or 0)
+                    else:
+                        coins = account_data.get("coin", [])
+                        for c in coins:
+                            if c.get("coin") == coin:
+                                equity += float(c.get("equity", 0))
+                                available_balance = float(c.get("availableToWithdraw", 0))
+            else:
+                logger.warning(f"Failed to fetch UNIFIED balance: {response.get('retMsg')}")
 
-                    # Fallback to specific coin if total balances are absent
+            # Parse Funding Balance
+            if fund_response.get("retCode") == 0:
+                list_data = fund_response.get("result", {}).get("list", [])
+                if list_data:
+                    account_data = list_data[0]
                     coins = account_data.get("coin", [])
                     for c in coins:
-                        if c.get("coin") == coin:
-                            return {
-                                "equity": float(c.get("equity", 0)),
-                                "availableBalance": float(c.get("availableToWithdraw", 0))
-                            }
-            logger.warning(f"Failed to fetch balance: {response.get('retMsg')}")
-            return None
+                        # For FUND account, use usdValue if available, else use walletBalance of specific coin
+                        usd_val = c.get("usdValue")
+                        if usd_val is not None and usd_val != "":
+                            fund_amount = float(usd_val)
+                            fund_balance += fund_amount
+                            equity += fund_amount
+                        elif c.get("coin") == coin:
+                            fund_amount = float(c.get("walletBalance", 0))
+                            fund_balance += fund_amount
+                            equity += fund_amount
+            else:
+                logger.warning(f"Failed to fetch FUND balance: {fund_response.get('retMsg')}")
+
+            return {
+                "equity": equity,
+                "availableBalance": available_balance,
+                "fundBalance": fund_balance
+            }
         except Exception as e:
             logger.error(f"Error fetching wallet balance: {e}")
             return None

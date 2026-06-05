@@ -12,6 +12,7 @@ const els = {
     valAvailable: document.getElementById('val-available'),
     valDailyPnl: document.getElementById('val-dailypnl'),
     pnlProgress: document.getElementById('pnl-progress'),
+    fundingWarning: document.getElementById('funding-warning'),
     positionsTbody: document.getElementById('positions-tbody'),
     historyTbody: document.getElementById('history-tbody'),
     logsContainer: document.getElementById('logs-container'),
@@ -29,6 +30,11 @@ const els = {
     confProfit: document.getElementById('conf-profit'),
     confWebUser: document.getElementById('conf-web-user'),
     confWebPass: document.getElementById('conf-web-pass'),
+
+    // Info Elements
+    btnInfo: document.getElementById('btn-info'),
+    infoModal: document.getElementById('info-modal'),
+    btnCloseInfo: document.getElementById('btn-close-info'),
 };
 
 // Initialize Chart
@@ -132,6 +138,13 @@ async function updateDashboard() {
     if (balance) {
         els.valEquity.innerText = parseFloat(balance.equity).toFixed(2);
         els.valAvailable.innerText = parseFloat(balance.availableBalance).toFixed(2);
+
+        // Show warning if funds are stuck in funding account
+        if (balance.fundBalance > 0 && balance.availableBalance <= 0) {
+            els.fundingWarning.classList.remove('hidden');
+        } else {
+            els.fundingWarning.classList.add('hidden');
+        }
     }
 
     // Positions
@@ -260,6 +273,15 @@ els.configForm.addEventListener('submit', async (e) => {
         WS_URL = 'ws://' + window.location.host + '/ws?token=' + data.token;
         // Don't restart WS here as it will reconnect automatically or on next poll
     }
+});
+
+// Info Modal Logic
+els.btnInfo.addEventListener('click', () => {
+    els.infoModal.classList.remove('hidden');
+});
+
+els.btnCloseInfo.addEventListener('click', () => {
+    els.infoModal.classList.add('hidden');
 });
 
 // WebSocket for Live Data
