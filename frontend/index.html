@@ -13,10 +13,26 @@
 <body class="p-6">
     <div class="max-w-7xl mx-auto space-y-6">
 
+        <!-- Warning Banner -->
+        <div id="funding-warning" class="hidden bg-yellow-600 text-white p-4 rounded-lg shadow-lg mb-6 flex justify-between items-center border border-yellow-500">
+            <div>
+                <strong class="font-bold">Attention!</strong>
+                <span class="block sm:inline"> You have funds in your Funding account but your Unified Trading balance is zero. The bot requires margin to trade. Please transfer your funds to your Unified Trading account via the Bybit website.</span>
+            </div>
+            <a href="https://www.bybit.com/user/assets/home" target="_blank" class="px-4 py-2 bg-yellow-700 hover:bg-yellow-800 rounded font-semibold transition ml-4 whitespace-nowrap">Go to Bybit Assets</a>
+        </div>
+
         <!-- Header & Controls -->
         <div class="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
             <div>
-                <h1 class="text-2xl font-bold">Algorithmic Scalping Bot</h1>
+                <h1 class="text-2xl font-bold flex items-center">
+                    Algorithmic Scalping Bot
+                    <button id="btn-info" class="ml-2 text-gray-400 hover:text-white transition" title="Bot Rules Info">
+                        <svg xmlns="http://www.w3.org/20w0/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                </h1>
                 <p class="text-gray-400 text-sm" id="status-text">Status: Checking...</p>
             </div>
             <div class="flex space-x-4 items-center">
@@ -166,6 +182,50 @@
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition">Save Settings</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg border border-gray-700 text-sm">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Bot Strategy & Rules</h2>
+            <div class="space-y-4 text-gray-300">
+                <p><strong class="text-white">Strategy:</strong> Mean Reversion & Momentum</p>
+
+                <div>
+                    <strong class="text-green-400">Buy (Hold/Long) Rules:</strong>
+                    <ul class="list-disc list-inside ml-2 mt-1">
+                        <li>RSI < 30 (Oversold)</li>
+                        <li>Close price <= Lower Bollinger Band</li>
+                        <li>EMA9 > EMA21</li>
+                        <li>Order Book Imbalance > 0.2</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <strong class="text-red-400">Sell (Put/Short) Rules:</strong>
+                    <ul class="list-disc list-inside ml-2 mt-1">
+                        <li>RSI > 70 (Overbought)</li>
+                        <li>Close price >= Upper Bollinger Band</li>
+                        <li>EMA9 < EMA21</li>
+                        <li>Order Book Imbalance < -0.2</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <strong class="text-yellow-400">Risk Management:</strong>
+                    <ul class="list-disc list-inside ml-2 mt-1">
+                        <li>Stop Loss: 0.5%</li>
+                        <li>Take Profit: 1.0%</li>
+                        <li>Risk per trade: 1% of Available Balance</li>
+                        <li>Spread must cover fee cost (Taker entry, Maker exit) * 1.5</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button type="button" id="btn-close-info" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded font-semibold transition">Close</button>
+            </div>
         </div>
     </div>
 
