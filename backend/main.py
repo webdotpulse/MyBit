@@ -80,13 +80,16 @@ def get_ws_token(_=Depends(verify_credentials)):
 
 # --- Frontend Serving ---
 
+# Get the base directory (one level up from backend)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 @app.get("/")
 def serve_index(_=Depends(verify_credentials)):
-    return FileResponse("frontend/index.html")
+    return FileResponse(os.path.join(BASE_DIR, "frontend", "index.html"))
 
 @app.get("/app.js")
 def serve_app_js(_=Depends(verify_credentials)):
-    return FileResponse("frontend/app.js")
+    return FileResponse(os.path.join(BASE_DIR, "frontend", "app.js"))
 
 # --- REST Endpoints ---
 
