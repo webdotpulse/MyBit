@@ -15,8 +15,8 @@ Restart=always
 RestartSec=5
 
 # Standard Output and Error Logs
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=trading-bot
 
 [Install]
