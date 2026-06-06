@@ -56,7 +56,11 @@ class BybitConnection:
             response = self.session.get_wallet_balance(accountType="UNIFIED")
 
             # Fetch Funding Account balance
-            fund_response = self.session.get_wallet_balance(accountType="FUND")
+            try:
+                fund_response = self.session.get_coins_balance(accountType="FUND", coin=coin)
+            except Exception as e:
+                logger.error(f"Error fetching FUND balance: {e}")
+                fund_response = {}
 
             equity = 0.0
             available_balance = 0.0
@@ -83,23 +87,14 @@ class BybitConnection:
                 logger.warning(f"Failed to fetch UNIFIED balance: {response.get('retMsg')}")
 
             # Parse Funding Balance
-            if fund_response.get("retCode") == 0:
-                list_data = fund_response.get("result", {}).get("list", [])
-                if list_data:
-                    account_data = list_data[0]
-                    coins = account_data.get("coin", [])
-                    for c in coins:
-                        # For FUND account, use usdValue if available, else use walletBalance of specific coin
-                        usd_val = c.get("usdValue")
-                        if usd_val is not None and usd_val != "":
-                            fund_amount = safe_float(usd_val)
-                            fund_balance += fund_amount
-                            equity += fund_amount
-                        elif c.get("coin") == coin:
-                            fund_amount = safe_float(c.get("walletBalance"))
-                            fund_balance += fund_amount
-                            equity += fund_amount
-            else:
+            if fund_response and fund_response.get("retCode") == 0:
+                balance_list = fund_response.get("result", {}).get("balance", [])
+                for c in balance_list:
+                    if c.get("coin") == coin:
+                        fund_amount = safe_float(c.get("walletBalance"))
+                        fund_balance += fund_amount
+                        equity += fund_amount
+            elif fund_response:
                 logger.warning(f"Failed to fetch FUND balance: {fund_response.get('retMsg')}")
 
             return {
