@@ -13,6 +13,8 @@ const els = {
     valDailyPnl: document.getElementById('val-dailypnl'),
     pnlProgress: document.getElementById('pnl-progress'),
     fundingWarning: document.getElementById('funding-warning'),
+    errorBanner: document.getElementById('error-banner'),
+    errorMessage: document.getElementById('error-message'),
     positionsTbody: document.getElementById('positions-tbody'),
     historyTbody: document.getElementById('history-tbody'),
     logsContainer: document.getElementById('logs-container'),
@@ -35,6 +37,8 @@ const els = {
     btnInfo: document.getElementById('btn-info'),
     infoModal: document.getElementById('info-modal'),
     btnCloseInfo: document.getElementById('btn-close-info'),
+
+    btnLogout: document.getElementById('btn-logout'),
 };
 
 // Initialize Chart
@@ -136,14 +140,23 @@ async function updateDashboard() {
     // Balance
     const balance = await fetchAPI('/balance');
     if (balance) {
-        els.valEquity.innerText = parseFloat(balance.equity).toFixed(2);
-        els.valAvailable.innerText = parseFloat(balance.availableBalance).toFixed(2);
-
-        // Show warning if funds are stuck in funding account
-        if (balance.fundBalance > 0 && balance.availableBalance <= 0) {
-            els.fundingWarning.classList.remove('hidden');
-        } else {
+        if (balance.error) {
+            els.errorBanner.classList.remove('hidden');
+            els.errorMessage.innerText = balance.error;
+            els.valEquity.innerText = "Error";
+            els.valAvailable.innerText = "Error";
             els.fundingWarning.classList.add('hidden');
+        } else {
+            els.errorBanner.classList.add('hidden');
+            els.valEquity.innerText = parseFloat(balance.equity).toFixed(2);
+            els.valAvailable.innerText = parseFloat(balance.availableBalance).toFixed(2);
+
+            // Show warning if funds are stuck in funding account
+            if (balance.fundBalance > 0 && balance.availableBalance <= 0) {
+                els.fundingWarning.classList.remove('hidden');
+            } else {
+                els.fundingWarning.classList.add('hidden');
+            }
         }
     }
 
@@ -282,6 +295,10 @@ els.btnInfo.addEventListener('click', () => {
 
 els.btnCloseInfo.addEventListener('click', () => {
     els.infoModal.classList.add('hidden');
+});
+
+els.btnLogout.addEventListener('click', () => {
+    window.location.href = window.location.protocol + "//logout:logout@" + window.location.host + "/";
 });
 
 // WebSocket for Live Data

@@ -22,6 +22,14 @@
             <a href="https://www.bybit.com/user/assets/home" target="_blank" class="px-4 py-2 bg-yellow-700 hover:bg-yellow-800 rounded font-semibold transition ml-4 whitespace-nowrap">Go to Bybit Assets</a>
         </div>
 
+        <!-- Error Banner -->
+        <div id="error-banner" class="hidden bg-red-600 text-white p-4 rounded-lg shadow-lg mb-6 flex justify-between items-center border border-red-500">
+            <div>
+                <strong class="font-bold">API Connection Error:</strong>
+                <span id="error-message" class="block sm:inline"></span>
+            </div>
+        </div>
+
         <!-- Header & Controls -->
         <div class="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
             <div>
@@ -40,6 +48,7 @@
                 <button id="btn-stop" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded font-semibold transition">Stop Bot</button>
                 <button id="btn-kill" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded font-bold shadow-[0_0_15px_rgba(220,38,38,0.5)] transition">KILL SWITCH</button>
                 <button id="btn-config" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition ml-4">Settings</button>
+                <button id="btn-logout" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded font-semibold transition">Logout</button>
             </div>
         </div>
 
