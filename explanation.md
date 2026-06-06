@@ -45,3 +45,19 @@ Before executing a market order based on a signal, the bot performs safety check
 - It checks if an open position already exists (it currently does not average in or reverse positions; it waits for the exit).
 - It sizes the position strictly based on the configured risk (e.g., 1% of the available balance).
 - It verifies that the expected spread between the entry price and expected take profit covers the exchange fees (maker and taker fees). If the gross profit is not at least 50% larger than the trading fees, the trade is skipped entirely.
+
+## 3. Recommended Capital and Realistic Daily Goals
+
+When running a high-frequency scalping bot, setting appropriate capital and having realistic expectations are crucial for long-term success.
+
+### Recommended Starting Capital
+The ideal starting capital to let the bot trade with is generally between **$500 and $1,000**.
+- **Minimum Order Sizes:** Bybit and other exchanges enforce minimum order sizes (often $10 to $20 depending on the asset). If your total capital is too small (e.g., $50), a 1% risk constraint means the bot can only use $0.50 per trade, which the exchange will reject.
+- **Risk Management:** With $500 to $1,000, risking 1% to 2% of your account per trade allows the bot to meet the minimum order size requirements comfortably while keeping individual trade risk low enough to survive drawdowns.
+- **Fee Coverage:** Larger positions ensure that the expected gross profit per trade significantly outweighs the fixed and proportional exchange fees (maker/taker fees).
+
+### Realistic Daily Goals
+In algorithmic trading, compounding small, consistent gains is far more sustainable than aiming for massive single-day returns.
+- **Achievable Goal:** A realistic and achievable profit goal is around **0.5% to 1.5% per day**.
+- **Why this works:** While 1% a day might sound small to some, it represents massive growth over time due to compounding. Scalping relies on making many small, highly probable trades.
+- **Managing Expectations:** Aiming for higher daily returns (e.g., 5% or 10%) usually requires increasing the risk per trade or applying excessive leverage. This significantly increases the probability of hitting stop-losses and draining the account during periods of high market volatility or sideways movement. The bot's primary directive is capital preservation followed by steady, incremental growth.
