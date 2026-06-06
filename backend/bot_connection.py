@@ -43,6 +43,14 @@ class BybitConnection:
             logger.error(f"Failed to connect ws_public: {e}")
 
     def get_wallet_balance(self, coin="USDT"):
+        def safe_float(val):
+            if not val:
+                return 0.0
+            try:
+                return float(val)
+            except Exception:
+                return 0.0
+
         try:
             # Fetch Unified Trading Account balance
             response = self.session.get_wallet_balance(accountType="UNIFIED")
@@ -63,14 +71,14 @@ class BybitConnection:
                     total_available = account_data.get("totalAvailableBalance")
 
                     if total_equity and total_available:
-                        equity += float(total_equity or 0)
-                        available_balance = float(total_available or 0)
+                        equity += safe_float(total_equity)
+                        available_balance = safe_float(total_available)
                     else:
                         coins = account_data.get("coin", [])
                         for c in coins:
                             if c.get("coin") == coin:
-                                equity += float(c.get("equity", 0))
-                                available_balance = float(c.get("availableToWithdraw", 0))
+                                equity += safe_float(c.get("equity"))
+                                available_balance = safe_float(c.get("availableToWithdraw"))
             else:
                 logger.warning(f"Failed to fetch UNIFIED balance: {response.get('retMsg')}")
 
@@ -84,11 +92,11 @@ class BybitConnection:
                         # For FUND account, use usdValue if available, else use walletBalance of specific coin
                         usd_val = c.get("usdValue")
                         if usd_val is not None and usd_val != "":
-                            fund_amount = float(usd_val)
+                            fund_amount = safe_float(usd_val)
                             fund_balance += fund_amount
                             equity += fund_amount
                         elif c.get("coin") == coin:
-                            fund_amount = float(c.get("walletBalance", 0))
+                            fund_amount = safe_float(c.get("walletBalance"))
                             fund_balance += fund_amount
                             equity += fund_amount
             else:
@@ -101,7 +109,7 @@ class BybitConnection:
             }
         except Exception as e:
             logger.error(f"Error fetching wallet balance: {e}")
-            return None
+            return {"error": str(e)}
 
     def get_tickers(self, category="linear"):
         try:

@@ -124,6 +124,8 @@ def kill_switch(_=Depends(verify_credentials)):
 @app.get("/api/balance")
 def get_balance(_=Depends(verify_credentials)):
     balance = bot.connection.get_wallet_balance()
+    if balance and "error" in balance:
+        return balance
     return balance if balance else {"equity": 0, "availableBalance": 0}
 
 @app.get("/api/positions")
