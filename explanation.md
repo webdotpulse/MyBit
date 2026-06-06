@@ -61,3 +61,38 @@ In algorithmic trading, compounding small, consistent gains is far more sustaina
 - **Achievable Goal:** A realistic and achievable profit goal is around **0.5% to 1.5% per day**.
 - **Why this works:** While 1% a day might sound small to some, it represents massive growth over time due to compounding. Scalping relies on making many small, highly probable trades.
 - **Managing Expectations:** Aiming for higher daily returns (e.g., 5% or 10%) usually requires increasing the risk per trade or applying excessive leverage. This significantly increases the probability of hitting stop-losses and draining the account during periods of high market volatility or sideways movement. The bot's primary directive is capital preservation followed by steady, incremental growth.
+
+
+### Optimal Settings for a $50 Starting Capital
+
+Starting with $50 is considered below the generally recommended capital ($500-$1,000) for high-frequency scalping. The main challenges with a small balance are meeting the exchange's minimum order sizes and the impact of trading fees. However, if you want to start earning with a $50 balance, you need to adjust your settings proportionally to manage risk while allowing the bot to trade.
+
+Here are the recommended settings for a $50 starting capital:
+
+#### 1. TRADING_PAIR
+**Recommendation:** `AUTO` (or a high-volume, low-price altcoin like `XRPUSDT`, `DOGEUSDT`, `ADAUSDT`)
+- **Why:** Bybit has minimum order sizes. For Bitcoin (`BTCUSDT`) or Ethereum (`ETHUSDT`), the minimum order value might occasionally make it hard to execute small scalping trades with only $50, especially if leverage is kept conservative. Setting it to `AUTO` allows the bot to find the best pair dynamically. Alternatively, picking cheaper altcoins ensures your small balance can comfortably cover minimum order quantities.
+
+#### 2. DAILY_PROFIT_GOAL
+**Recommendation:** `0.5` to `0.75`
+- **Why:** A realistic daily profit target for a scalping strategy is 0.5% to 1.5% of your total capital. For a $50 account:
+  - 1% of $50 = $0.50
+  - 1.5% of $50 = $0.75
+- Setting the goal to $50 (which would be 100% daily profit) is highly unrealistic and extremely risky. Setting it to `$0.50` will realistically stop the bot once you've hit a sustainable daily target, protecting your gains.
+
+#### 3. MAX_DAILY_DRAWDOWN
+**Recommendation:** `2.5` to `5.0`
+- **Why:** The maximum daily drawdown should act as a strict safety net. A common risk management rule is never to risk more than 5% to 10% of your account in a single day.
+  - 5% of $50 = $2.50
+  - 10% of $50 = $5.00
+- Setting your max drawdown to `$2.50` ensures that if the market turns heavily against you, the bot will halt trading for the day, preserving the majority of your $50 capital for future trades.
+
+#### Summary
+Update your `.env` (or via the Web Dashboard) to:
+```env
+TRADING_PAIR=AUTO
+MAX_DAILY_DRAWDOWN=2.5
+DAILY_PROFIT_GOAL=0.5
+```
+
+**Note on Leverage:** Ensure your leverage settings on Bybit are appropriate. Higher leverage allows you to meet order size minimums easier with $50, but it drastically increases the chance of liquidation. Keep it conservative to survive short-term market volatility.
